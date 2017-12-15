@@ -3,14 +3,14 @@ module Tor
     def to_json(body)
       JSON.parse(body)
     rescue Exception => e
-      $Logger.tag("ERROR") { "#{e.class}:#{e.message}" }
+      logger.info "#{e.class}:#{e.message}"
       {}
     end
 
     def number_to_human_size(num, options={})
       ActiveSupport::NumberHelper::NumberToHumanSizeConverter.convert num, options
     end
-    
+
     def encode_html(body)
       if /<meta .*?content=".*?charset=(\w+)"/ =~ body.encode("UTF-16be", :invalid=>:replace, :replace=>"?").encode('UTF-8')
         encode = $1
@@ -18,7 +18,7 @@ module Tor
           begin
             body = body.dup.force_encoding(encode).encode("utf-8", invalid: :replace, under: :replace) 
           rescue Exception => e
-            $Logger.tag("ERROR") { "#{e.class}:#{e.message}(Tor.request)" }
+            logger.info "#{e.class}:#{e.message}(Tor.request)"
           end
         end
       end
