@@ -1,19 +1,20 @@
-require 'open3'
+require 'pathname'
 module Tor extend self
   extend Lock
   class Error < StandardError; end
   class UnvaliablePort < Error; end
   class DiedPortError < Error; end
   class InvalidFormat < Error; end
-  USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36'
-  MOBILE_AGENT = 'ANDROID_KFZ_COM_2.0.9_M6 Note_7.1.2'
+  USER_AGENT          = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36'
+  MOBILE_AGENT        = 'ANDROID_KFZ_COM_2.0.9_M6 Note_7.1.2'
   TOR_COUNT           = 10
   TOR_PORT_START_WITH = 9000
+  TOR_DIR             = Pathname.new('/tmp/tor')
 
   def init
     lock("tor:init", expires: 1.minutes) do
-      Parallel.each(0...TOR_COUNT, in_threads: 20, progress: 'Init Tor') do |i|
-        listen(TOR_PORT_START_WITH + i)
+      TOR_COUNT.times do |i|
+        listen(TOR_PORT_START_WITH + i + 1)
       end
     end
   end
@@ -87,24 +88,26 @@ module Tor extend self
 
   def stop(port)
     logger.info "Stop tor port:#{port}"
-    Open3.pipeline("ps aux", "grep tor", "grep RunAsDaemon", "grep #{port}", "awk '{print $2}'", "xargs kill -9")
+    instance = store[port]
+    if instance && instance.pid
+      Process.kill("KILL", instance.pid)
+    end
+    FileUtils.rm_rf(TOR_DIR.join(port.to_s))
+  rescue Exception
+    
   ensure
     store.delete(port)
   end
 
   def listen(port)
     return if port.blank? || !port.to_s.match(/^\d+$/)
-    # if `lsof -i -P -n |grep -E :#{port}`.chomp.present?
-    #   logger.error "Unavailable port:#{port}, it used!"
-    #   return
-    # end
 
     logger.info "Open tor with port:#{port}"
 
     control_port = 6000 + port.to_i
 
     tor = 'tor --RunAsDaemon 1 --CookieAuthentication 0 --HashedControlPassword ""'
-    tor+= " --ControlPort #{ control_port } --PidFile tor#{port}.pid --SocksPort #{port} --DataDirectory #{dir(port)}"
+    tor+= " --ControlPort #{ control_port } --PidFile tor.pid --SocksPort #{port} --DataDirectory #{dir(port)}"
     tor+= " --CircuitBuildTimeout 5 --KeepalivePeriod 60 --NewCircuitPeriod 15 --NumEntryGuards 8"# make tor faster
     tor+= " --quiet" # unless Rails.env.production?
     system tor
@@ -130,7 +133,7 @@ module Tor extend self
   end
 
   def dir(port)
-    "/tmp/tor/#{port}".tap do |dir|
+    TOR_DIR.join("#{port}").tap do |dir|
       FileUtils.mkpath(dir) if not Dir.exists?(dir)
     end
   end
@@ -150,12 +153,20 @@ module Tor extend self
   end
 
   def clear
-    `ps aux | grep tor | grep RunAsDaemon|grep -v "ps aux" | awk '{print $2}' | xargs kill -9`
+    Dir.glob(TOR_DIR.join("**/*.pid")).each do |path|
+      begin
+        Process.kill("KILL", File.read(path).chomp.to_i)
+      rescue Errno::ESRCH
+      end
+    end
+    FileUtils.rm_rf(TOR_DIR)
+    true
+  ensure
     store.clear
   end
 
   def count
-    `ps aux | grep tor | grep RunAsDaemon|grep -v "ps aux"`.to_s.strip.split("\n").keep_if { |s| s.strip.present? }.count
+    Dir.glob(TOR_DIR.join("*")).count
   end
 
   def unused

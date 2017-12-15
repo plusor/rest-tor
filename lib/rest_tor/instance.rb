@@ -21,6 +21,13 @@ module Tor
       @counter= Counter.new(self, counter || {})
     end
 
+    def pid
+      path = Tor::TOR_DIR.join("#{port}/tor.pid")
+      if File.exists?(path)
+        File.read(path).chomp.to_i
+      end
+    end
+
     def attributes
       { ip: @ip, port: @port, using: @using, counter: @counter.to_h }
     end

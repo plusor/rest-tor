@@ -1,8 +1,12 @@
-# Rest::Tor
+# Rest Tor
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/rest/tor`. To experiment with that code, run `bin/console` for an interactive prompt.
+Tor for ruby.  Support for multiple processes.  Each request will take an tor instance.
 
-TODO: Delete this and the text above, and describe your gem
+Tor.request will  take an instance if has tor instanc, otherwise initialize an instance.
+
+## What can it do
+
+- Web Crawler
 
 ## Installation
 
@@ -38,6 +42,51 @@ Or install it yourself as:
 
       Tor.request(url: '...', mode: :default)  # Priority to use the highest number of successes, default is :default
       Tor.request(url: '...', mode: :order) # in order
+
+      # show all instances
+      Tor.store.all
+      => {"9001"=>#<Tor::Instance:0x007fb7798d2498 @port="9001", @ip="64.113.32.29", @using=nil, @counter=#<Counter success: 5, fail: 1, succss_at: 2017-12-15 19:52:44 +0800, fail_at:2017-12-15 19:52:26 +0800>>}
+      # Clear instances
+      Tor.clear
+      # Stop instance
+      Tor.stop(port)
+
+      # Initialize tors
+      Tor.init
+      I, [2017-12-15T20:40:36.189835 #60422]  INFO -- : Open tor with port:9001
+      I, [2017-12-15T20:40:41.242452 #60422]  INFO -- : Testing tor 9001
+      I, [2017-12-15T20:40:42.881857 #60422]  INFO -- :   IP: 163.172.67.180 
+      I, [2017-12-15T20:40:42.882737 #60422]  INFO -- : Open tor with port:9002
+      I, [2017-12-15T20:40:47.931555 #60422]  INFO -- : Testing tor 9002
+      I, [2017-12-15T20:41:18.924004 #60422]  INFO -- :   IP: 155.4.230.97 
+      I, [2017-12-15T20:41:18.925154 #60422]  INFO -- : Open tor with port:9003
+      I, [2017-12-15T20:41:23.971647 #60422]  INFO -- : Testing tor 9003
+      I, [2017-12-15T20:41:46.111952 #60422]  INFO -- :   IP: 46.17.97.112 
+      I, [2017-12-15T20:41:46.112896 #60422]  INFO -- : Open tor with port:9004
+      I, [2017-12-15T20:41:51.164009 #60422]  INFO -- : Testing tor 9004
+      I, [2017-12-15T20:42:20.096998 #60422]  INFO -- :   IP: 109.201.133.100 
+      I, [2017-12-15T20:42:20.097992 #60422]  INFO -- : Open tor with port:9005
+      I, [2017-12-15T20:42:25.148808 #60422]  INFO -- : Testing tor 9005
+      I, [2017-12-15T20:43:01.699053 #60422]  INFO -- :   IP: 62.210.129.246 
+      I, [2017-12-15T20:43:01.700151 #60422]  INFO -- : Open tor with port:9006
+      I, [2017-12-15T20:43:06.756239 #60422]  INFO -- : Testing tor 9006
+      I, [2017-12-15T20:43:39.118469 #60422]  INFO -- :   IP: 163.172.160.182 
+      I, [2017-12-15T20:43:39.119310 #60422]  INFO -- : Open tor with port:9007
+      I, [2017-12-15T20:43:44.194975 #60422]  INFO -- : Testing tor 9007
+      I, [2017-12-15T20:44:23.526274 #60422]  INFO -- :   IP: 89.144.12.14 
+      I, [2017-12-15T20:44:23.527287 #60422]  INFO -- : Open tor with port:9008
+      I, [2017-12-15T20:44:28.575018 #60422]  INFO -- : Testing tor 9008
+      I, [2017-12-15T20:44:51.746405 #60422]  INFO -- :   IP: 195.22.126.147 
+      I, [2017-12-15T20:44:51.747258 #60422]  INFO -- : Open tor with port:9009
+      I, [2017-12-15T20:44:56.793446 #60422]  INFO -- : Testing tor 9009
+      I, [2017-12-15T20:45:32.469774 #60422]  INFO -- :   IP: 62.210.129.246 
+      I, [2017-12-15T20:45:32.470560 #60422]  INFO -- : Open tor with port:9010
+      I, [2017-12-15T20:45:37.528114 #60422]  INFO -- : Testing tor 9010
+      I, [2017-12-15T20:46:37.533066 #60422]  INFO -- : Stop tor port:9010
+      I, [2017-12-15T20:46:37.533927 #60422]  INFO -- : RestClient::Exceptions::OpenTimeout:Timed out connecting to server
+      I, [2017-12-15T20:46:37.534015 #60422]  INFO -- : Open tor with port:9010
+      I, [2017-12-15T20:46:42.588824 #60422]  INFO -- : Testing tor 9010
+      I, [2017-12-15T20:47:02.179464 #60422]  INFO -- :   IP: 173.254.216.66
 
 
 ## TODO
