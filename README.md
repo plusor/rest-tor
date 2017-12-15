@@ -26,6 +26,7 @@ Or install it yourself as:
 
 ## Usage
 
+```ruby
       Tor.request(url: 'http://ip.plusor.cn/')
        => #<Nokogiri::HTML::Document:0x3fcd64ec6eb0 name="document" children=[#<Nokogiri::XML::DTD:0x3fcd64ec6af0 name="html">, #<Nokogiri::XML::Element:0x3fcd64ec67f8 name="html" children=[#<Nokogiri::XML::Element:0x3fcd64ec6618 name="body" children=[#<Nokogiri::XML::Element:0x3fcd64ec6438 name="p" children=[#<Nokogiri::XML::Text:0x3fcd64ec6258 "185.100.85.101\n">]>]>]>]> 
 
@@ -33,7 +34,7 @@ Or install it yourself as:
       "64.113.32.29\n" 
 
       Tor.request(url: 'http://ip.plusor.cn/', mobile: true) # RestClient.get "http://ip.plusor.cn/", "", "Accept"=>"*/*", "Accept-Encoding"=>"gzip, deflate", "Content-Length"=>"0", "Content-Type"=>"application/x-www-form-urlencoded", "User-Agent"=>"ANDROID_KFZ_COM_2.0.9_M6 Note_7.1.2"
-      Tor.request(url: 'http://ip.plusor.cn/') # RestClient.get "http://ip.plusor.cn/", "", "Accept"=>"*/*", "Accept-Encoding"=>"gzip, deflate", "Content-Length"=>"0", "Content-Type"=>"application/x-www-form-urlencoded", "User-Agent"=>"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36"
+      Tor.request(url: 'http://ip.plusor.cn/')               # RestClient.get "http://ip.plusor.cn/", "", "Accept"=>"*/*", "Accept-Encoding"=>"gzip, deflate", "Content-Length"=>"0", "Content-Type"=>"application/x-www-form-urlencoded", "User-Agent"=>"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36"
 
       Tor.request(method: :post, url: '...', format: :json, mobile: true)
       => {'hello' => 'world'}
@@ -88,6 +89,7 @@ Or install it yourself as:
       I, [2017-12-15T20:46:42.588824 #60422]  INFO -- : Testing tor 9010
       I, [2017-12-15T20:47:02.179464 #60422]  INFO -- :   IP: 173.254.216.66
 
+```
 
 ## TODO
 
