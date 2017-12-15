@@ -44,6 +44,14 @@ Or install it yourself as:
       Tor.request(url: '...', mode: :default)  # Priority to use the highest number of successes, default is :default
       Tor.request(url: '...', mode: :order) # in order
 
+      # Customize an mode
+      Tor::Dispatcher.register :custom do
+        Tor.store.all.sort_by do |(port, tor)|
+          tor.c_success
+        end
+      end
+      Tor.request(url: '...', mode: :custom)
+
       # show all instances
       Tor.store.all
       => {"9001"=>#<Tor::Instance:0x007fb7798d2498 @port="9001", @ip="64.113.32.29", @using=nil, @counter=#<Counter success: 5, fail: 1, succss_at: 2017-12-15 19:52:44 +0800, fail_at:2017-12-15 19:52:26 +0800>>}
@@ -97,7 +105,6 @@ Or install it yourself as:
 - Optimization code
 - Add config
 - Configurable restart strategy
-- Configurable dispatcher
 
 ## Development
 
