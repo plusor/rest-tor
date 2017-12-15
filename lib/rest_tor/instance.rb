@@ -93,7 +93,11 @@ module Tor
     end
 
     def avaliable?
-      `ps aux | grep tor | grep RunAsDaemon | grep -v "ps aux" | grep #{port} | awk '{print $2}'`.to_s.strip.to_i > 0
+      begin
+        pid && Process.getpgid( pid ) && true
+      rescue Errno::ESRCH
+        false
+      end
     end
   end
 
