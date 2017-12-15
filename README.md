@@ -8,7 +8,16 @@ Tor.request will  take an instance if has tor instanc, otherwise initialize an i
 
 - Web Crawler
 
+## Requirements
+
+- Tor
+
+  Mac os:  brew install tor
+
+  Linux: apt-get install tor
+
 ## Installation
+
 
 Add this line to your application's Gemfile:
 
