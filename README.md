@@ -69,6 +69,12 @@ Or install it yourself as:
       # Stop instance
       Tor.stop(port)
 
+      # proxy default is true
+      Tor.request(url: 'http://ip.plusor.cn',raw: false, proxy: false)
+      [2017-12-16 16:19:34.545] [95646-70129455200740] Started GET "http://ip.plusor.cn" (port:rest-client | mode:default)
+      [2017-12-16 16:19:34.785] [95646-70129455200740] Completed 200 OK in 0.2s (Size: 15 Bytes)
+       => "172.104.89.163\n"
+
       # Initialize tors
       Tor.init
       I, [2017-12-15T20:40:36.189835 #60422]  INFO -- : Open tor with port:9001

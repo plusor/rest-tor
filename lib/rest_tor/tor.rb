@@ -23,7 +23,8 @@ module Tor extend self
     @store ||= Redis::HashKey.new('tor', marshal: true).tap { |s| s.send(:extend, Builder) }
   end
 
-  def hold_tor(mode: :default, &block)
+  def hold_tor(mode: :default, rest: false, &block)
+    return yield if rest
     if tor=Thread.current[:tor]
       port = tor.port
     else
@@ -42,25 +43,28 @@ module Tor extend self
 
   def request(options={}, &block)
     url     = options[:url]
-    mode    = options[:mode] || :default
+    mobile  = options[:mobile]
+    proxy   = options[:proxy] == false ? false : true
     raw     = options[:raw].nil? ? true : false
-    method  = options[:method] || :get
+    mode    = options[:mode]    || :default
+    method  = options[:method]  || :get
     payload = options[:payload] || {}
     timeout = options[:timeout] || 10
-    format  = options[:format] || (raw ? :html : :string)
-    mobile  = options[:mobile]
+    format  = options[:format]  || (raw ? :html : :string)
+    headers = options[:headers] || options[:header] || {}
     default_header = { 'User-Agent' => mobile ? MOBILE_AGENT : USER_AGENT }
     time, body = Time.now, nil
 
-    hold_tor(mode: mode) do |port, tor|
-      logger.info "Started #{method.to_s.upcase} #{url.inspect} (port:#{port} | mode:#{mode}"
-      params = {
-        method: method,
-        url: url,
-        payload: payload,
-        proxy: "socks5://127.0.0.1:#{port}",
-        timeout: timeout,
-        headers: default_header.merge(options[:header] || {})
+    hold_tor(mode: mode, rest: !proxy) do |port, tor|
+      logger.info "Started #{method.to_s.upcase} #{url.inspect} (port:#{port || 'rest-client'} | mode:#{mode})"
+      proxy   =  proxy && "socks5://127.0.0.1:#{port}" or nil
+      params  = {
+        method:   method,
+        url:      url,
+        payload:  payload,
+        proxy:    proxy,
+        timeout:  timeout,
+        headers:  default_header.merge(headers)
       }
 
       begin
@@ -68,12 +72,14 @@ module Tor extend self
            yield(res, req, headers ) if block_given?
            res
         end
-        tor.success!
+        tor&.success!
         body = response.body
         logger.info "Completed #{response.try(:code)} OK in #{(Time.now-time).round(1)}s (Size: #{Utils.number_to_human_size(body.bytesize)})"
       rescue Exception => e
         tor.fail!(e)
-        logger.info "#{e.class}: #{e.message}, <Tor#(success: #{tor.counter.success}, fail: #{tor.counter.fail}, port: #{tor.port})>"
+        if tor
+          logger.info "#{e.class}: #{e.message}, <Tor#(success: #{tor.counter.success}, fail: #{tor.counter.fail}, port: #{tor.port})>"
+        end
         raise e
       end
     end
