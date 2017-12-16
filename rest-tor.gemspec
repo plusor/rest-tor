@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = "Tor for ruby"
   spec.description   = 'Tor for ruby'
-  spec.homepage      = 'https://github.com/plusor'
+  spec.homepage      = 'https://github.com/plusor/rest-tor'
   spec.license       = "MIT"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
