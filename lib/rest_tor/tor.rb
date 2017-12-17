@@ -1,4 +1,5 @@
 require 'pathname'
+require 'rest_tor/lock'
 module Tor extend self
   extend Lock
   class Error < StandardError; end

@@ -1,6 +1,6 @@
 module Tor
   module Lock
-    def lock(key, expires: 10*60, timeout: 1 * 60 * 0, &block)
+    def lock(key, expires: 10.minutes, timeout: 1.hour, &block)
       Redis::Lock.new("tor:lock:#{key}", expiration: expires, timeout: timeout).lock { yield }
     end
 
