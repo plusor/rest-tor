@@ -45,7 +45,7 @@ module Tor extend self
   def request(options={}, &block)
     url     = options[:url]
     mobile  = options[:mobile]
-    proxy   = options[:proxy] == false ? false : true
+    proxy   = options[:proxy]
     raw     = options[:raw].nil? ? true : false
     mode    = options[:mode]    || :default
     method  = options[:method]  || :get
@@ -55,10 +55,14 @@ module Tor extend self
     headers = options[:headers] || options[:header] || {}
     default_header = { 'User-Agent' => mobile ? MOBILE_AGENT : USER_AGENT }
     time, body = Time.now, nil
+    rest    = proxy == false
 
-    hold_tor(mode: mode, rest: !proxy) do |port, tor|
-      logger.info "Started #{method.to_s.upcase} #{url.inspect} (port:#{port || 'rest-client'} | mode:#{mode})"
-      proxy   ||= "socks5://127.0.0.1:#{port}"
+    hold_tor(mode: mode, rest: rest) do |port, tor|
+
+      proxy  ||= "socks5://127.0.0.1:#{port}" if not rest
+
+      logger.info "Started #{method.to_s.upcase} #{url.inspect} (proxy:#{proxy} | mode:#{mode})"
+
       params  = {
         method:   method,
         url:      url,
