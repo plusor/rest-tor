@@ -118,7 +118,6 @@ module Tor extend self
     tor+= " --CircuitBuildTimeout 5 --KeepalivePeriod 60 --NewCircuitPeriod 15 --NumEntryGuards 8"# make tor faster
     tor+= " --quiet" # unless Rails.env.production?
     system tor
-    sleep 5
     if ip=test(port)
       store.insert(port, ip)
     else
