@@ -14,9 +14,9 @@ module Tor extend self
 
   def init
     lock("tor:init", expires: 1.minutes) do
-      TOR_COUNT.times do |i|
-        listen(TOR_PORT_START_WITH + i + 1)
-      end
+      threads = []
+      TOR_COUNT.times { |i| threads << Thread.new { listen(TOR_PORT_START_WITH + i + 1) }  }
+      threads.map(&:join)
     end
   end
 
