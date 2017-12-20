@@ -55,7 +55,7 @@ module Tor extend self
     headers = options[:headers] || options[:header] || {}
     default_header = { 'User-Agent' => mobile ? MOBILE_AGENT : USER_AGENT }
     time, body = Time.now, nil
-    rest    = proxy == false
+    rest    = proxy != nil
 
     hold_tor(mode: mode, rest: rest) do |port, tor|
 
@@ -79,10 +79,10 @@ module Tor extend self
         end
         tor&.success!
         body = response.body
-        logger.info "Completed #{response.try(:code)} OK in #{(Time.now-time).round(1)}s (Size: #{Utils.number_to_human_size(body.bytesize)})"
+        logger.info "Completed #{response.try(:code)} OK in #{(Time.now-time).round(1)}s (size: #{Utils.number_to_human_size(body.bytesize)})"
       rescue Exception => e
-        tor.fail!(e)
         if tor
+          tor.fail!(e)
           logger.info "#{e.class}: #{e.message}, <Tor#(success: #{tor.counter.success}, fail: #{tor.counter.fail}, port: #{tor.port})>"
         end
         raise e
