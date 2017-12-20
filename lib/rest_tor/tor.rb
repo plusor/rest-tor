@@ -58,7 +58,7 @@ module Tor extend self
 
     hold_tor(mode: mode, rest: !proxy) do |port, tor|
       logger.info "Started #{method.to_s.upcase} #{url.inspect} (port:#{port || 'rest-client'} | mode:#{mode})"
-      proxy   =  proxy && "socks5://127.0.0.1:#{port}" or nil
+      proxy   ||= "socks5://127.0.0.1:#{port}"
       params  = {
         method:   method,
         url:      url,
