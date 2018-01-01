@@ -46,6 +46,7 @@ module Tor extend self
     url     = options[:url]
     mobile  = options[:mobile]
     proxy   = options[:proxy]
+    proxy   = nil if proxy == true
     raw     = options[:raw].nil? ? true : false
     mode    = options[:mode]    || :default
     method  = options[:method]  || :get
