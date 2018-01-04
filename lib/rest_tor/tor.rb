@@ -8,14 +8,11 @@ module Tor extend self
   class InvalidFormat < Error; end
   USER_AGENT          = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36'
   MOBILE_AGENT        = 'ANDROID_KFZ_COM_2.0.9_M6 Note_7.1.2'
-  TOR_COUNT           = 10
-  TOR_PORT_START_WITH = 9000
-  TOR_DIR             = Pathname.new('/tmp/tor')
 
   def init
     lock("tor:init", expires: 1.minutes) do
       threads = []
-      TOR_COUNT.times { |i| threads << Thread.new { listen(TOR_PORT_START_WITH + i + 1) }  }
+      config.count.times { |i| threads << Thread.new { listen(config.port + i + 1) }  }
       threads.map(&:join)
     end
   end
@@ -104,7 +101,7 @@ module Tor extend self
     if instance && instance.pid
       Process.kill("KILL", instance.pid)
     end
-    FileUtils.rm_rf(TOR_DIR.join(port.to_s))
+    FileUtils.rm_rf(config.dir.join(port.to_s))
   rescue Exception
     
   ensure
@@ -144,7 +141,7 @@ module Tor extend self
   end
 
   def dir(port)
-    TOR_DIR.join("#{port}").tap do |dir|
+    config.dir.join("#{port}").tap do |dir|
       FileUtils.mkpath(dir) if not Dir.exists?(dir)
     end
   end
@@ -164,20 +161,20 @@ module Tor extend self
   end
 
   def clear
-    Dir.glob(TOR_DIR.join("**/*.pid")).each do |path|
+    Dir.glob(config.dir.join("**/*.pid")).each do |path|
       begin
         Process.kill("KILL", File.read(path).chomp.to_i)
       rescue Errno::ESRCH
       end
     end
-    FileUtils.rm_rf(TOR_DIR)
+    FileUtils.rm_rf(config.dir)
     true
   ensure
     store.clear
   end
 
   def count
-    Dir.glob(TOR_DIR.join("*")).count
+    Dir.glob(config.dir.join("*")).count
   end
 
   def unused

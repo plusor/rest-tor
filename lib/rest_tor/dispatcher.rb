@@ -12,7 +12,7 @@ module Tor
       Tor.lock("tor:pick", expires: 10) do
         port, tor = run(mode)
         if port.blank? || tor.blank?
-          port, _ = Tor.store.max {|a,b | a[0] <=> b[0] } || Tor::TOR_PORT_START_WITH
+          port, _ = Tor.store.max {|a,b | a[0] <=> b[0] } || Tor.config.port
           tor     = Tor.listen(port=port.next)
         end
         return [port, tor]

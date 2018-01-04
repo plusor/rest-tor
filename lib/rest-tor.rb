@@ -17,4 +17,12 @@ module Tor
   def self.logger=(log)
     @logger = log
   end
+
+  def self.setup(&block)
+    instance_exec(&block)
+  end
+
+  def self.config
+    @config ||= Configuration.new
+  end
 end

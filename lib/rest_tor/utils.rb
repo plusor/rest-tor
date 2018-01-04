@@ -3,7 +3,7 @@ module Tor
     def to_json(body)
       JSON.parse(body)
     rescue Exception => e
-      logger.info "#{e.class}:#{e.message}"
+      Tor.logger.info "#{e.class}:#{e.message} (Tor.request)"
       {}
     end
 
@@ -18,7 +18,7 @@ module Tor
           begin
             body = body.dup.force_encoding(encode).encode("utf-8", invalid: :replace, under: :replace) 
           rescue Exception => e
-            logger.info "#{e.class}:#{e.message}(Tor.request)"
+            Tor.logger.info "#{e.class}:#{e.message} (Tor.request)"
           end
         end
       end
