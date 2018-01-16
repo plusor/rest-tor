@@ -6,7 +6,7 @@ module Tor
     include Strategy::Restart
     extend Forwardable
 
-    ATTRS = %i(ip port using counter)
+    ATTRS = %i(ip port using counter created_at)
 
     attr_accessor *ATTRS
 
@@ -14,11 +14,12 @@ module Tor
     def_delegator :@counter, :success, :c_success
     def_delegator :@counter, :fail, :c_fail
 
-    def initialize(port, ip: nil, using: nil, counter: nil)
-      @port   = port
-      @ip     = ip
-      @using  = using
-      @counter= Counter.new(self, counter || {})
+    def initialize(port, ip: nil, using: nil, counter: nil, created_at: Time.now)
+      @port       = port
+      @ip         = ip
+      @using      = using
+      @counter    = Counter.new(self, counter || {})
+      @created_at = created_at
     end
 
     def pid
@@ -29,7 +30,7 @@ module Tor
     end
 
     def attributes
-      { ip: @ip, port: @port, using: @using, counter: @counter.to_h }
+      { ip: @ip, port: @port, using: @using, counter: @counter.to_h, created_at: @created_at }
     end
 
     ATTRS.each do |name|
@@ -48,7 +49,7 @@ module Tor
       self.using = nil
 
       if Tor.locked?("#{port}:restart")
-        logger.info "The tor(#{port}) already processing!"
+        Tor.logger.info "The tor(#{port}) already processing!"
       else
         if error=died?
           restart!("Died(#{error})")
@@ -58,7 +59,7 @@ module Tor
     end
 
     def restart!(message="")
-      logger.info "#{message} Restart => #{ip}:#{port}"
+      Tor.logger.info "#{message} Restart => #{ip}:#{port}"
       Tor.restart(port)
     end
 
@@ -79,7 +80,7 @@ module Tor
     def apply(&block)
       Tor.lock("tor:#{port}:update", expires: 1.minutes) do
         if not Tor.store.has_key?(port)
-          logger.info "Has been destroyed"
+          Tor.logger.info "Has been destroyed"
           return
         end
         if block_given?

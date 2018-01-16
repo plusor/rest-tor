@@ -56,6 +56,7 @@ module Tor extend self
     rest    = proxy != nil
 
     hold_tor(mode: mode, rest: rest) do |port, tor|
+      Thread.current[:tor] = tor if tor.present?
 
       proxy  ||= "socks5://127.0.0.1:#{port}" if not rest
 
@@ -200,7 +201,7 @@ module Tor extend self
     private
     def safe_value(value)
       counter = value.try(:[], :counter) || {}
-      value.slice(*[:ip, :using]).merge({
+      value.slice(*[:ip, :using, :created_at]).merge({
         counter: counter.slice(*[:success, :fail, :success_at, :fail_at, :errors])
       })
     rescue NoMethodError => e
