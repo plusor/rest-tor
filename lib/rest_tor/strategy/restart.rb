@@ -4,7 +4,7 @@ module Tor
       DEFAULT_EXCEPTION_COUNT = 50
       EXCEPTIONS = {
         ::Net::OpenTimeout    => 20,
-        ::Errno::ECONNREFUSED => 50,
+        ::Errno::ECONNREFUSED => 1,
         ::RestClient::Exceptions::OpenTimeout => 20
       }
 
