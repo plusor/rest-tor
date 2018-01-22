@@ -73,8 +73,12 @@ module Tor extend self
 
       begin
         response = RestClient::Request.execute(params) do |res, req, headers|
-           yield(res, req, headers ) if block_given?
-           res
+          if res.code == 302
+            res.follow_redirection
+          else
+            yield(res, req, headers ) if block_given?
+            res
+          end
         end
         tor&.success!
         body = response.body
