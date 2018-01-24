@@ -118,7 +118,8 @@ Or install it yourself as:
 
 - Test
 - Optimization code
-- Add config
+- Configurable http client
+ - Add chrom headless
 - Configurable restart strategy
 
 ## Development
