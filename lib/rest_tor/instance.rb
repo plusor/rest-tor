@@ -23,7 +23,7 @@ module Tor
     end
 
     def pid
-      path = Tor::TOR_DIR.join("#{port}/tor.pid")
+      path = Tor.config.dir.join("#{port}/tor.pid")
       if File.exists?(path)
         File.read(path).chomp.to_i
       end

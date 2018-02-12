@@ -106,7 +106,7 @@ module Tor extend self
     if instance && instance.pid
       Process.kill("KILL", instance.pid)
     end
-    FileUtils.rm_rf(config.dir.join(port.to_s))
+    FileUtils.rm_rf dir(port)
   rescue Exception
     
   ensure
@@ -118,13 +118,8 @@ module Tor extend self
 
     logger.info "Open tor with port:#{port}"
 
-    control_port = 6000 + port.to_i
+    system config.command.call(port)
 
-    tor = 'tor --RunAsDaemon 1 --CookieAuthentication 0 --HashedControlPassword ""'
-    tor+= " --ControlPort #{ control_port } --PidFile tor.pid --SocksPort #{port} --DataDirectory #{dir(port)}"
-    tor+= " --CircuitBuildTimeout 5 --KeepalivePeriod 60 --NewCircuitPeriod 15 --NumEntryGuards 8"# make tor faster
-    tor+= " --quiet" # unless Rails.env.production?
-    system tor
     if ip=test(port)
       store.insert(port, ip)
     else
@@ -154,11 +149,9 @@ module Tor extend self
   def test(port)
     logger.info  "Testing tor #{port}"
 
-    url = 'http://ip.plusor.cn/'
-
-    req = RestClient::Request.execute({method: :get, url: url, proxy: "socks5://127.0.0.1:#{port}"})
-    req.body.chomp.tap do |body|
-      logger.info "  IP: #{body} "
+    req = RestClient::Request.execute({method: :get, url: config.ipApi, proxy: "socks5://127.0.0.1:#{port}"})
+    config.ipParser.call(req.body).tap do |ip|
+      logger.info "  IP: #{ip} "
     end
   rescue Net::OpenTimeout, Net::ReadTimeout, Errno::ECONNREFUSED, SOCKSError, SOCKSError::TTLExpired, Errno::ECONNRESET => e
     logger.error "#{e.class}: #{e.message}"

@@ -3,3 +3,4 @@
 - Open tor without sleep
 - Tor.init use Multithreading
 - Tor.request allow pass custom proxy
+- Tor.setup
