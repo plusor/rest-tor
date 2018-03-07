@@ -4,6 +4,10 @@ Tor for ruby.  Support for multiple processes.  Each request will take an tor in
 
 Tor.request will  take an instance if has tor instanc, otherwise initialize an instance.
 
+## Note
+
+Tor may be blocked by GWF,  try VPN!
+
 ## What can it do
 
 - Web Crawler
@@ -45,7 +49,10 @@ Tor.setup do
   config.dir        =   Pathname.new('/tmp/tor'),  # 
   config.ipApi      =   'http://ip.plusor.cn/', # get tor ip
   config.ipParser   =   -> (body) { body[/\d{,3}\.\d{,3}\.\d{,3}\.\d{,3}/] },   # get tor ip
-  config.command    =   -> (port) { "tor --RunAsDaemon 1 --CookieAuthentication 0 --HashedControlPassword \"\"  --ControlPort auto --PidFile #{Tor.dir(port)}/tor.pid --SocksPort #{port} --DataDirectory #{Tor.dir(port)}  --CircuitBuildTimeout 5 --KeepalivePeriod 60 --NewCircuitPeriod 15 --NumEntryGuards 8 --quiet" }
+  # Specify a node(country)   " --ExitNodes {AU} --StrictNodes 1 "
+  # Specify multiple nodes(country)   " --ExitNodes {AU,US,....} --StrictNodes 1 "
+  # Node codes: https://countrycode.org
+  config.command    =   -> (port) { "tor --RunAsDaemon 1 --HashedControlPassword \"\"  --ControlPort auto --PidFile #{Tor.dir(port)}/tor.pid --SocksPort #{port} --DataDirectory #{Tor.dir(port)}  --CircuitBuildTimeout 5 --KeepalivePeriod 60 --NewCircuitPeriod 15 --NumEntryGuards 8 --quiet" }
 end
 ```
 
