@@ -39,16 +39,18 @@ Or install it yourself as:
 
 ## Usage
 
+Must be setup config.ipApi.  `http://ip.plusor.cn/` not available!
+
 #### SETUP
 
 ```ruby
 # Default setup
 Tor.setup do
-  config.count      =   10,   # Init count
-  config.port       =   9000, # Listen port start with 9000
-  config.dir        =   Pathname.new('/tmp/tor'),  # 
-  config.ipApi      =   'http://ip.plusor.cn/', # get tor ip
-  config.ipParser   =   -> (body) { body[/\d{,3}\.\d{,3}\.\d{,3}\.\d{,3}/] },   # get tor ip
+  config.count      =   10   # Init count
+  config.port       =   9000 # Listen port start with 9000
+  config.dir        =   Pathname.new('/tmp/tor')  # 
+  config.ipApi      =   'http://ip.plusor.cn/' # get tor ip
+  config.ipParser   =   -> (body) { body[/\d{,3}\.\d{,3}\.\d{,3}\.\d{,3}/] }   # get tor ip
   # Specify a node(country)   " --ExitNodes {AU} --StrictNodes 1 "
   # Specify multiple nodes(country)   " --ExitNodes {AU,US,....} --StrictNodes 1 "
   # Node codes: https://countrycode.org
